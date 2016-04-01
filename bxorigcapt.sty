@@ -1,0 +1,94 @@
+% bxorigcapt.sty
+
+%% package declaration
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{bxorigcapt}[2013/03/31 v0.2]
+
+%% preparation
+\def\bxoc@pkgname{bxorigcapt}
+\def\bxoc@error{\PackageError\bxoc@pkgname}
+\def\bxoc@warn{\PackageWarningNoLine\bxoc@pkgname}
+\providecommand*{\bxDebug}{\@gobble}
+
+%% handle options
+\let\bxoc@target@lang\relax
+\DeclareOption*{%
+  \edef\bxoc@target@lang{\CurrentOption}%
+}
+\ProcessOptions*
+
+%---------------------------------------
+
+%% \bxoc@namelist
+\@onlypreamble\bxoc@namelist
+\def\bxoc@namelist{%
+  abstract,also,appendix,author,bib,cc,chapter,contents,%
+  encl,figure,glossary,headto,index,listfigure,listtable,%
+  page,part,preface,proof,ps,ref,seealso,see,subject,table,%
+  prepart,postpart,prechapter,postchapter,presection,postsection%
+}
+
+%% \bxoc@save@captions
+%% \bxoc@restore@captions
+\@onlypreamble\bxoc@save@captions
+\let\bxoc@save@captions\@empty
+\let\bxoc@restore@captions\@empty
+\begingroup
+  \@for\bxoc@x:=\bxoc@namelist\do{%
+    \edef\bxoc@tempa{%
+     \let\expandafter\noexpand\csname bxoc@@\bxoc@x name\endcsname
+     \expandafter\noexpand\csname\bxoc@x name\endcsname}%
+    \expandafter\g@addto@macro\expandafter\bxoc@save@captions
+     \expandafter{\bxoc@tempa}%
+    \edef\bxoc@tempa{%
+     \let\expandafter\noexpand\csname\bxoc@x name\endcsname
+     \expandafter\noexpand\csname bxoc@@\bxoc@x name\endcsname}%
+    \expandafter\g@addto@macro\expandafter\bxoc@restore@captions
+     \expandafter{\bxoc@tempa}%
+  }
+\endgroup
+%% \bxoc@restore@date
+\def\bxoc@restore@date{%
+  \let\today\bxoc@@today
+}
+
+%% \bxoc@enable@restore
+\@onlypreamble\bxoc@enable@restore
+\def\bxoc@enable@restore{%
+  \ifx\bxoc@target@lang\relax
+    \let\bxoc@target@lang\bbl@main@language
+  \fi
+  \bxDebug{target=\bxoc@target@lang}%
+  \expandafter\ifx\csname date\bxoc@target@lang\endcsname\relax
+    \bxoc@error{Language '\bxoc@target@lang' not defined}\@ehc
+    \@namedef{date\bxoc@target@lang}{}%
+  \fi
+  \expandafter\ifx\csname captions\bxoc@target@lang\endcsname\relax
+    \@namedef{captions\bxoc@target@lang}{}%
+  \fi
+  \expandafter\g@addto@macro\csname date\bxoc@target@lang\endcsname{%
+   \bxoc@restore@date}%
+  \expandafter\g@addto@macro\csname captions\bxoc@target@lang\endcsname{%
+   \bxoc@restore@captions}%
+}
+
+%% Saves the current names
+\bxoc@save@captions
+\let\bxoc@@today\today
+
+%%
+\@ifpackageloaded{babel}{%
+  \bxoc@enable@restore
+}{%else
+  \AtBeginDocument{%
+    \@ifpackageloaded{babel}{%
+      \bxoc@enable@restore
+    }{%else
+      \bxoc@warn{Babel is not loaded}%
+    }%
+  }%
+}
+
+%---------------------------------------
+\endinput
+%% EOF
