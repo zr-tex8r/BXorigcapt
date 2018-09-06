@@ -1,7 +1,7 @@
 %%
 %% This is file 'bxorigcapt.sty'.
-%% 
-%% Copyright (c) 2017 Takayuki YATO (aka. "ZR")
+%%
+%% Copyright (c) 2017-2018 Takayuki YATO (aka. "ZR")
 %%   GitHub:   https://github.com/zr-tex8r
 %%   Twitter:  @zr_tex8r
 %%
@@ -10,21 +10,25 @@
 
 %% package declaration
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{bxorigcapt}[2017/05/03 v0.2a]
+\ProvidesPackage{bxorigcapt}[2018/09/05 v0.2a]
 \def\bxoc@pkgname{bxorigcapt}
 \providecommand*\bxDebug[1]{}
 
 %% code guard
 \edef\bxoc@restore@codes{%
+\catcode33=\the\catcode33%
 \catcode39=\the\catcode39%
 \catcode46=\the\catcode46%
 \catcode47=\the\catcode47%
 \catcode58=\the\catcode58%
+\catcode63=\the\catcode63%
 \relax}
+\catcode33=12 % <!>
 \catcode39=12 % <'>
 \catcode46=12 % <.>
 \catcode47=12 % </>
 \catcode58=12 % <:>
+\catcode63=12 % <?>
 \AtEndOfPackage{%
 \bxoc@restore@codes
 \let\bxoc@restore@codes\relax}
@@ -41,7 +45,36 @@
 % dispatch
 \ProcessOptions*
 
+%--------------------------------------- environment
+
+%% switch 'bxoc@polyglossia@available'
+\newif\ifbxoc@polyglossia@available
+\begingroup
+  \@tempswafalse
+  % engine check
+  \def\bxoc@next#1{%
+    \edef\bxoc@tmpa{\string#1}\edef\bxoc@tmpb{\meaning#1}%
+    \ifx\bxoc@tmpa\bxoc@tmpb \@tempswatrue \fi
+  }
+  \bxoc@next\XeTeXversion
+  \bxoc@next\luatexversion
+  % file check
+  \if@tempswa
+    \IfFileExists{polyglossia.sty}{}{\@tempswafalse}
+    \IfFileExists{etoolbox.sty}{}{\@tempswafalse}
+  \fi
+  \if@tempswa
+    \bxDebug{Polyglossia might be loaded}
+    \global\bxoc@polyglossia@availabletrue
+  \fi
+\endgroup
+
 %--------------------------------------- general
+
+%% packages
+\ifbxoc@polyglossia@available
+  \RequirePackage{etoolbox}\relax
+\fi
 
 %% \bxoc@name@list
 % The list of caption names.
@@ -67,22 +100,73 @@
 
 %--------------------------------------- hook
 
+%% \bxoc@check@conflict
+% Check if both babel and polyglossia are loaded, and then
+% annihilate all the function of this package.
+\@onlypreamble\bxoc@check@conflict
+\def\bxoc@check@conflict{%
+  \@ifpackageloaded{polyglossia}{%
+    %NB. polyglossia marks babel as loaded.
+    \@ifpackageloaded{babel}{%
+      \ifx\bbl@afterelse\@undefined\else % Babel is REALLY loaded
+        \PackageError\bxoc@pkgname
+         {Both Babel and Polyglossia are loaded!\MessageBreak
+          Such usage is not supported}%
+         {All the function of \bxoc@pkgname\space
+          is invalidated.\MessageBreak\@ehc}%
+        % annihilate
+        \let\bxoc@babel@hook\relax
+        \let\bxoc@check@conflict\relax
+      \fi
+    }{}%
+  }{}%
+}
+
+%% \bxoc@if@babel@or@polyglossia@loaded
+\@onlypreamble\bxoc@if@babel@or@polyglossia@loaded
+\def\bxoc@if@babel@or@polyglossia@loaded{%
+  \let\bxoc@next\@secondoftwo
+  \@ifpackageloaded{babel}{\let\bxoc@next\@firstoftwo}{}%
+  \@ifpackageloaded{polyglossia}{\let\bxoc@next\@firstoftwo}{}%
+  \bxoc@next
+}
+
 %% \bxoc@babel@hook
 % Note that \bxoc@babel@hook must be invoked between the loading
 % of babel and the dispatch of babel's begin-document hook.
 \@onlypreamble\bxoc@babel@hook
 \let\bxoc@babel@hook\@empty
-\@ifpackageloaded{babel}{%
-  \AtEndOfPackage{\bxoc@babel@hook}%
-}{%else
-  \AtBeginDocument{%
-    \@ifpackageloaded{babel}{%
+\bxoc@if@babel@or@polyglossia@loaded{%
+  \ifbxoc@polyglossia@available
+    \AtEndPreamble{%
+      \bxoc@check@conflict
       \bxoc@babel@hook
-    }{%else
-      \PackageWarning\bxoc@pkgname
-       {Babel is not loaded,}%
     }%
-  }%
+  \else
+    \AtEndOfPackage{\bxoc@babel@hook}%
+  \fi
+}{%else
+  \ifbxoc@polyglossia@available
+    \AtEndPreamble{%
+      \bxoc@if@babel@or@polyglossia@loaded{%
+        \bxoc@check@conflict
+        \bxoc@babel@hook
+      }{%else
+        \PackageWarning\bxoc@pkgname
+         {Neither Polyglossia nor Babel is\MessageBreak
+          loaded,}%
+      }%
+    }%
+  \else
+    \AtBeginDocument{%
+      \@ifpackageloaded{babel}{%
+        \bxoc@babel@hook
+      }{%else
+        \PackageWarning\bxoc@pkgname
+         {Babel is not loaded,}%
+      }%
+    }%
+  \fi
 }
 
 %--------------------------------------- deprecated ldf stuffs
@@ -145,7 +229,18 @@
 \@onlypreamble\bxoc@enable@restore
 \def\bxoc@enable@restore{%
   \ifx\bxoc@target@lang\relax
-    \let\bxoc@target@lang\bbl@main@language
+    \@ifpackageloaded{polyglossia}{%
+      \let\bxoc@target@lang\xpg@main@language
+    }{%else
+      \let\bxoc@target@lang\bbl@main@language
+    }%
+    \ifx\bxoc@target@lang\@undefined
+      \PackageError\bxoc@pkgname
+       {The main language is not set}%
+       {\@ehc}%
+      \def\bxoc@target@lang{?bxoc}
+      \@namedef{date\bxoc@target@lang}{}%
+    \fi
   \fi
   \bxDebug{target=\bxoc@target@lang}%
   \expandafter\ifx\csname date\bxoc@target@lang\endcsname\relax
