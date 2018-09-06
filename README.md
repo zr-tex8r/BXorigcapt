@@ -6,13 +6,15 @@ LaTeX: To retain the original caption names when using Babel
 This package forces the caption names (`\chaptername`, `\today`, etc)
 declared by the document class in use to be used as the caption names
 for a specific language introduced by the Babel package.
+
+Starting from version 0.3, this package also supports Polyglossia.
                                                             
 ### System requirement
 
   * TeX format: LaTeX.
   * TeX engine: Anything.
   * Dependent packages:
-      - babel
+      - babel or polyglossia
 
 ### Installation
 
@@ -71,6 +73,8 @@ done through the package option.
 Revision History
 ----------------
 
+  * Version 0.3  〈2018/09/05〉
+      - Add support for Polyglossia.
   * Version 0.2a 〈2017/05/03〉
       - Minor fix.
   * Version 0.2  〈2016/04/01〉
