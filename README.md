@@ -55,24 +55,31 @@ class treated as the caption names for a specific language.
 
 ### Package Loading
 
-    \usepackage[<language>]{bxorigcapt}
+    \usepackage[<option>,...]{bxorigcapt}
 
-The package option specifies a Babel language, and requires that the
-caption names provided by the document class (actually the ones that are
-effective when this package is loaded) should be used as the caption names
-for that language.
+Available options are:
 
-The option can be omitted; in that case, the main language of Babel will
-be assumed.
+  - a Babel language name: Specifies the target language. The default
+    target language is the main language of Babel.
+  - `warn`: Issues a warning (instead of an info) if Babel is never
+    loaded in the preamble.
 
 ### Usage
 
-For present, this package has no public commands. All the settings are
-done through the package option.
+Once this package is loaded, the caption names provided by the document
+class (actually the ones that are effective when this package is loaded)
+will be used as the caption names for the target language (which is
+specified by the package option).
+
+This package has no public commands.
+
 
 Revision History
 ----------------
 
+  * Version 0.4  〈2022/03/12〉
+      - Adjustment for new version of Babel.
+      - Add option `warn`.
   * Version 0.3  〈2018/09/05〉
       - Add support for Polyglossia.
   * Version 0.2a 〈2017/05/03〉
