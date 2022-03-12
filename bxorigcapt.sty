@@ -52,35 +52,47 @@
 }
 % dispatch
 \ProcessOptions*
+\bxDebug{target language = %
+  \ifx\bxoc@target@lang\relax (main)\else \bxoc@target@lang\fi}
 
 %--------------------------------------- environment
 
+%% switch 'bxoc@etoolbox@available'
+\newif\ifbxoc@etoolbox@available
 %% switch 'bxoc@polyglossia@available'
 \newif\ifbxoc@polyglossia@available
 \begingroup
-  \@tempswafalse
-  % engine check
   \def\bxoc@next#1{%
     \edef\bxoc@tmpa{\string#1}\edef\bxoc@tmpb{\meaning#1}%
     \ifx\bxoc@tmpa\bxoc@tmpb \@tempswatrue \fi
   }
-  \bxoc@next\XeTeXversion
-  \bxoc@next\luatexversion
-  % file check
+  %% set 'bxoc@etoolbox@available'
+  \@tempswafalse
+  \bxoc@next\eTeXversion
   \if@tempswa
-    \IfFileExists{polyglossia.sty}{}{\@tempswafalse}
     \IfFileExists{etoolbox.sty}{}{\@tempswafalse}
   \fi
   \if@tempswa
-    \bxDebug{Polyglossia might be loaded}
-    \global\bxoc@polyglossia@availabletrue
+    \bxDebug{etoolbox is available}
+    \global\bxoc@etoolbox@availabletrue
+    %% set 'bxoc@polyglossia@available'
+    \@tempswafalse
+    \bxoc@next\XeTeXversion
+    \bxoc@next\luatexversion
+    \if@tempswa
+      \IfFileExists{polyglossia.sty}{}{\@tempswafalse}
+    \fi
+    \if@tempswa
+      \bxDebug{Polyglossia is available}
+      \global\bxoc@polyglossia@availabletrue
+    \fi
   \fi
 \endgroup
 
 %--------------------------------------- general
 
 %% packages
-\ifbxoc@polyglossia@available
+\ifbxoc@etoolbox@available
   \RequirePackage{etoolbox}\relax
 \fi
 
@@ -145,7 +157,7 @@
 \@onlypreamble\bxoc@babel@hook
 \let\bxoc@babel@hook\@empty
 \bxoc@if@babel@or@polyglossia@loaded{%
-  \ifbxoc@polyglossia@available
+  \ifbxoc@etoolbox@available
     \AtEndPreamble{%
       \bxoc@check@conflict
       \bxoc@babel@hook
@@ -154,7 +166,7 @@
     \AtEndOfPackage{\bxoc@babel@hook}%
   \fi
 }{%else
-  \ifbxoc@polyglossia@available
+  \ifbxoc@etoolbox@available
     \AtEndPreamble{%
       \bxoc@if@babel@or@polyglossia@loaded{%
         \bxoc@check@conflict
@@ -250,7 +262,7 @@
       \@namedef{date\bxoc@target@lang}{}%
     \fi
   \fi
-  \bxDebug{target=\bxoc@target@lang}%
+  \bxDebug{target language = \bxoc@target@lang}%
   \expandafter\ifx\csname date\bxoc@target@lang\endcsname\relax
     \PackageError\bxoc@pkgname
      {Language '\bxoc@target@lang' not defined}%
@@ -264,6 +276,13 @@
     \bxoc@restore@date}%
   \expandafter\g@addto@macro\csname captions\bxoc@target@lang\endcsname{%
     \bxoc@restore@captions}%
+  \ifbxoc@etoolbox@available
+    % do not do 'ensure'!
+    \ifcsundef{bbl@e@\bxoc@target@lang}{}{%else
+      \bxDebug{ensure for \bxoc@target@lang\space invalidated}%
+      \csundef{bbl@e@\bxoc@target@lang}%
+    }%
+  \fi
 }
 
 %% Saves the current captions
