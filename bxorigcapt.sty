@@ -38,7 +38,15 @@
 %% \bxoc@target@lang
 \let\bxoc@target@lang\relax
 
-%% language options
+%% \bxoc@warn@or@info
+\let\bxoc@warn@or@info\PackageInfo
+
+%% handle options
+% 'warn'
+\DeclareOption{warn}{%
+  \let\bxoc@warn@or@info\PackageWarning
+}
+% language options
 \DeclareOption*{%
   \edef\bxoc@target@lang{\CurrentOption}%
 }
@@ -152,9 +160,9 @@
         \bxoc@check@conflict
         \bxoc@babel@hook
       }{%else
-        \PackageWarning\bxoc@pkgname
+        \bxoc@warn@or@info\bxoc@pkgname
          {Neither Polyglossia nor Babel is\MessageBreak
-          loaded,}%
+          loaded, reported}%
       }%
     }%
   \else
@@ -162,8 +170,8 @@
       \@ifpackageloaded{babel}{%
         \bxoc@babel@hook
       }{%else
-        \PackageWarning\bxoc@pkgname
-         {Babel is not loaded,}%
+        \bxoc@warn@or@info\bxoc@pkgname
+         {Babel is not loaded,\MessageBreak reported}%
       }%
     }%
   \fi
