@@ -12,7 +12,7 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{bxorigcapt}[2022/03/12 v0.4]
 \def\bxoc@pkgname{bxorigcapt}
-\providecommand*\bxDebug[1]{}
+\providecommand\bxDebug[1]{}
 
 %% code guard
 \edef\bxoc@restore@codes{%
@@ -42,9 +42,12 @@
 \let\bxoc@warn@or@info\PackageInfo
 
 %% handle options
-% 'warn'
+% 'warn'/'nowarn'
 \DeclareOption{warn}{%
   \let\bxoc@warn@or@info\PackageWarning
+}
+\DeclareOption{nowarn}{%
+  \let\bxoc@warn@or@info\PackageInfo
 }
 % language options
 \DeclareOption*{%
