@@ -199,7 +199,7 @@
 \def\bxoc@clear@deprecated@ldf{%
   \begingroup
     \@for\bxoc@tmpa:=\bxoc@deprecated@ldf@list\do{%
-      \ifx\@bxoc@tmpa\@empty\else
+      \ifx\bxoc@tmpa\@empty\else
         \expandafter\ifx\csname \bxoc@tmpa\endcsname\relax\else
           \bxDebug{Smashed \@backslashchar\bxoc@tmpa}%
           \global\expandafter\let\csname\bxoc@tmpa\endcsname\@empty
