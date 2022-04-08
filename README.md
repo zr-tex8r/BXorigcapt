@@ -63,6 +63,7 @@ Available options are:
     target language is the main language of Babel.
   - `warn`: Issues a warning (instead of an info) if Babel is never
     loaded in the preamble.
+  - `nowarn`: Negation of `warn`.
 
 ### Usage
 
@@ -77,6 +78,9 @@ This package has no public commands.
 Revision History
 ----------------
 
+  * Version 0.4a 〈2022/04/08〉
+      - Add option `nowarn`.
+      - Bug fix.
   * Version 0.4  〈2022/03/12〉
       - Adjustment for new version of Babel.
       - Add option `warn`.
