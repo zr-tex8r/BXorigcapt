@@ -1,0 +1,112 @@
+\documentclass[a4paper]{article}
+\usepackage[scale=0.75]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,textcomp}
+\usepackage{color}
+\definecolor{myblue}{rgb}{0,0,0.75}
+\definecolor{mygreen}{rgb}{0,0.45,0}
+\usepackage[colorlinks]{hyperref}
+\hypersetup{linkcolor=myblue,urlcolor=mygreen,
+  pdftitle={The bxorigcapt package},
+  pdfauthor={Takayuki YATO}}
+\usepackage{bxtexlogo}
+\bxtexlogoimport{*}
+\usepackage{shortvrb}
+\MakeShortVerb{\|}
+\newcommand{\PkgVersion}{1.0}
+\newcommand{\PkgDate}{2022/04/10}
+\newcommand{\Pkg}[1]{\textsf{#1}}
+\newcommand{\Meta}[1]{$\langle$#1$\rangle$}
+\newcommand{\Note}{\par\noindent\emph{Note.}}
+\newcommand{\Means}{:\quad}
+%-----------------------------------------------------------
+\begin{document}
+\title{The \Pkg{bxorigcapt} package}
+\author{Takayuki YATO\quad (aka.~``ZR'')}
+\date{v\PkgVersion\quad[\PkgDate]}
+\maketitle
+%\tableofcontents
+\begin{abstract}
+This package forces the caption names (|\chaptername|, |\today|, etc.)\ %
+declared by the document class in use to be used as the caption names
+for a specific language introduced by the Babel package.
+
+Starting from version 0.3, this package also supports Polyglossia.
+\end{abstract}
+
+%===========================================================
+\section{Introduction}
+\label{sec:Introduction}
+
+Suppose you have designed a document class
+tailored for the Esperanto language.
+The class has the following definition of caption names
+and you like it:
+\begin{quote}
+|\newcommand\contentsname{Tabelo de Enhavo}|
+\end{quote}
+
+If a document is written solely in Esperanto,
+then there is no need to employ the Babel package.
+(Yes, the document class should select the hyphenation rule
+for the language.)
+However, when you want to create document
+that contains Esperanto and German,
+then you have to utilize Babel,
+to have correct hyphenations for both languages.
+\begin{quote}
+|\usepackage[ngerman,esperanto]{babel}|
+\end{quote}
+
+But unfortunately, this changes |\contentsname|
+from ``Tabelo de Enhavo'' (what you have chosen)
+to ``Enhavo''
+(what is declared in the language definition file of Babel),
+which is unfavorable.
+
+In fact, when using a document class for a specific language,
+the most suitable caption names \emph{for that language}
+should be the ones provided by the class.
+The \Pkg{bxorigcapt} package realizes this natural request,
+that is, it enables you
+to make the caption names declared in the current document class
+treated as the caption names for a specific language.
+
+
+%===========================================================
+\section{Package Loading}
+\label{sec:Package-Loading}
+
+\begin{quote}
+|\usepackage[|\Meta{option}|,...]{bxorigcapt}|
+\end{quote}
+
+Available options are:
+\begin{itemize}
+\item |main| (default)\Means
+  Sets the main language of Babel to the default target language.
+\item \emph{a Babel language name}\Means
+  Specifies the target language.
+\item |warn|\Means
+  Issues a warning (instead of an info)
+  if Babel is never loaded in the preamble.
+\item |nowarn| (default)\Means
+  Negation of |warn|.
+\end{itemize}
+
+
+%===========================================================
+\section{Usage}
+\label{sec:Usage}
+
+Once this package is loaded,
+the caption names provided by the document class
+(actually the ones that are effective when this package is loaded)
+will be used as the caption names for the target language
+(which is specified by the package option).
+
+This package has no public commands.
+
+
+%===========================================================
+\end{document}

@@ -12,9 +12,10 @@ Starting from version 0.3, this package also supports Polyglossia.
 ### System requirement
 
   * TeX format: LaTeX.
-  * TeX engine: Anything.
+  * TeX engine: Any engine with e-TeX extension.
   * Dependent packages:
       - babel or polyglossia
+      - etoolbox v2.1+
 
 ### Installation
 
@@ -24,60 +25,19 @@ Starting from version 0.3, this package also supports Polyglossia.
 
 This package is distributed under the MIT License.
 
+
 The bxorigcapt Package
 ----------------------
 
-### Introduction
-
-Suppose you have designed a document class tailored for the Esperanto
-language. The class has the following definition of caption names and you
-like it:
-
-    \newcommand\contentsname{Tabelo de Enhavo}
-
-If a document is written solely in Esperanto, then there is no need to
-employ the Babel package. (Yes, the document class should select the
-hyphenation rule for the language.)  However, when you want to create
-document that contains Esperanto and German, then you have to utilize
-Babel, to have correct hyphenations for both languages.
-
-    \usepackage[ngerman,esperanto]{babel}
-
-But unfortunately, this changes `\contentsname` from “Tabelo de Enhavo”
-(what you have chosen) to “Enhavo” (what is declared in the language
-definition file of Babel), which is unfavorable.
-
-In fact, when using a document class for a specific language, the most
-suitable caption names *for that language* should be the ones provided by
-the class. The bxorigcapt package realizes this natual request, that is,
-it enables you to make the caption names declared in the current document
-class treated as the caption names for a specific language.
-
-### Package Loading
-
-    \usepackage[<option>,...]{bxorigcapt}
-
-Available options are:
-
-  - a Babel language name: Specifies the target language. The default
-    target language is the main language of Babel.
-  - `warn`: Issues a warning (instead of an info) if Babel is never
-    loaded in the preamble.
-  - `nowarn`: Negation of `warn`.
-
-### Usage
-
-Once this package is loaded, the caption names provided by the document
-class (actually the ones that are effective when this package is loaded)
-will be used as the caption names for the target language (which is
-specified by the package option).
-
-This package has no public commands.
+See the manual bxorigcapt.pdf for detail.
 
 
 Revision History
 ----------------
 
+  * Version 1.0  〈2022/04/10〉
+      - Now e-TeX and etoolbox are required.
+      - Add option `main`.
   * Version 0.4a 〈2022/04/08〉
       - Add option `nowarn`.
       - Bug fix.
