@@ -49,6 +49,10 @@
 \DeclareOption{nowarn}{%
   \let\bxoc@warn@or@info\PackageInfo
 }
+% 'main'
+\DeclareOption{main}{%
+  \let\bxoc@target@lang\relax
+}
 % language options
 \DeclareOption*{%
   \edef\bxoc@target@lang{\CurrentOption}%
